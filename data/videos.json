@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-13T14:01:40.365Z",
+  "exportedAt": "2026-08-13T14:02:39.230Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -231,6 +231,24 @@
       "createdAt": "2026-08-13T14:01:37.863Z",
       "updatedAt": "2026-08-13T14:01:37.863Z",
       "order": 12
+    },
+    {
+      "id": "vmsrl874ucw37k",
+      "url": "https://www.instagram.com/reel/DaqDUsasIcd/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "videoSrc": "",
+      "platform": "instagram",
+      "title": "Runmyway",
+      "description": "",
+      "tags": [
+        "インスタグラム"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-13",
+      "createdAt": "2026-08-13T14:02:36.702Z",
+      "updatedAt": "2026-08-13T14:02:36.702Z",
+      "order": 13
     }
   ]
 }
