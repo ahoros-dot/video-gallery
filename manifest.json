@@ -1,0 +1,14 @@
+{
+  "name": "Video Gallery",
+  "short_name": "Gallery",
+  "description": "Instagram などの動画をまとめて一覧表示するギャラリー",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1115",
+  "theme_color": "#0f1115",
+  "lang": "ja",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

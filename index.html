@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<meta name="description" content="Instagram などの動画をまとめて一覧表示するギャラリー">
+<title>Video Gallery</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <img src="icon.svg" alt="" class="brand-icon" width="28" height="28">
+    <div class="brand-text">
+      <h1>Video Gallery</h1>
+      <p class="stats" id="stats">読み込み中…</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button type="button" class="sync-btn" id="syncBtn" hidden aria-haspopup="dialog"></button>
+    <button type="button" class="icon-btn" id="themeBtn" title="テーマ切り替え" aria-label="テーマ切り替え">🌙</button>
+    <button type="button" class="icon-btn" id="menuBtn" title="メニュー" aria-label="メニュー" aria-haspopup="dialog">⋯</button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-row">
+    <div class="search-wrap">
+      <span class="search-icon" aria-hidden="true">🔍</span>
+      <input type="search" id="search" placeholder="タイトル・説明・タグで検索" autocomplete="off" aria-label="検索">
+      <button type="button" class="clear-btn" id="searchClear" hidden aria-label="検索をクリア">×</button>
+    </div>
+    <button type="button" class="primary-btn add-btn" id="addBtn">＋ 追加</button>
+  </div>
+
+  <div class="toolbar-row scroll-row">
+    <label class="select-wrap">
+      <span class="sr-only">並び順</span>
+      <select id="sort" aria-label="並び順">
+        <option value="manual">手動並び替え</option>
+        <option value="added-desc">追加が新しい順</option>
+        <option value="added-asc">追加が古い順</option>
+        <option value="published-desc">公開日が新しい順</option>
+        <option value="published-asc">公開日が古い順</option>
+        <option value="title-asc">タイトル昇順</option>
+        <option value="title-desc">タイトル降順</option>
+        <option value="rating-desc">評価が高い順</option>
+        <option value="random">ランダム</option>
+      </select>
+    </label>
+
+    <div class="seg" role="group" aria-label="表示形式">
+      <button type="button" data-view="grid" class="seg-btn is-active" title="グリッド表示">▦</button>
+      <button type="button" data-view="list" class="seg-btn" title="リスト表示">▤</button>
+      <button type="button" data-view="compact" class="seg-btn" title="コンパクト表示">≡</button>
+    </div>
+
+    <label class="select-wrap">
+      <span class="sr-only">プラットフォーム</span>
+      <select id="platformFilter" aria-label="プラットフォームで絞り込み">
+        <option value="">すべての種類</option>
+      </select>
+    </label>
+
+    <button type="button" class="chip" id="favFilter" aria-pressed="false">★ お気に入り</button>
+    <button type="button" class="chip" id="selectModeBtn" aria-pressed="false">☑ 選択</button>
+  </div>
+
+  <div class="tag-row" id="tagRow" hidden></div>
+</div>
+
+<div class="bulkbar" id="bulkbar" hidden>
+  <span id="bulkCount">0件を選択中</span>
+  <div class="bulkbar-actions">
+    <button type="button" class="ghost-btn" id="bulkAll">全選択</button>
+    <button type="button" class="ghost-btn" id="bulkFav">★ 切替</button>
+    <button type="button" class="ghost-btn" id="bulkTag">タグ追加</button>
+    <button type="button" class="ghost-btn danger" id="bulkDelete">削除</button>
+  </div>
+</div>
+
+<main>
+  <div id="gallery" class="gallery view-grid" aria-live="polite"></div>
+
+  <div id="emptyState" class="empty" hidden>
+    <p class="empty-emoji">🎬</p>
+    <p class="empty-title">まだ動画がありません</p>
+    <p class="empty-body">Instagram の投稿・リールの URL を貼り付けて追加してみましょう。<br>YouTube / TikTok / Vimeo にも対応しています。</p>
+    <button type="button" class="primary-btn" id="emptyAddBtn">＋ 最初の動画を追加</button>
+  </div>
+
+  <div id="noResult" class="empty" hidden>
+    <p class="empty-emoji">🔍</p>
+    <p class="empty-title">条件に合う動画がありません</p>
+    <button type="button" class="ghost-btn" id="resetFilterBtn">絞り込みを解除</button>
+  </div>
+</main>
+
+<footer class="app-footer">
+  <p>データはこのブラウザに保存されます。公開用に反映するには メニュー → <b>JSON を書き出し</b> して <code>data/videos.json</code> を差し替えてください。</p>
+</footer>
+
+<!-- 追加・編集ダイアログ -->
+<dialog id="itemDialog" class="dialog">
+  <form method="dialog" id="itemForm">
+    <div class="dialog-head">
+      <h2 id="dialogTitle">動画を追加</h2>
+      <button type="button" class="icon-btn" data-close aria-label="閉じる">×</button>
+    </div>
+
+    <div class="dialog-body">
+      <label class="field">
+        <span class="field-label">URL <em>必須</em></span>
+        <input type="url" id="fUrl" required placeholder="https://www.instagram.com/reel/xxxxxxxxx/" autocomplete="off">
+        <span class="field-hint" id="urlHint">Instagram / YouTube / TikTok / Vimeo / X の URL</span>
+      </label>
+
+      <div class="preview-slot" id="formPreview" hidden></div>
+
+      <label class="field">
+        <span class="field-label">タイトル</span>
+        <input type="text" id="fTitle" placeholder="例：夏の海リール" maxlength="120">
+      </label>
+
+      <label class="field">
+        <span class="field-label">説明</span>
+        <textarea id="fDesc" rows="3" placeholder="メモや説明を自由に" maxlength="1000"></textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">タグ</span>
+        <input type="text" id="fTags" placeholder="旅行, 料理, お気に入り（カンマ区切り）" list="tagSuggest" autocomplete="off">
+        <datalist id="tagSuggest"></datalist>
+      </label>
+
+      <div class="field-grid">
+        <label class="field">
+          <span class="field-label">公開日</span>
+          <input type="date" id="fDate">
+        </label>
+        <label class="field">
+          <span class="field-label">評価</span>
+          <select id="fRating">
+            <option value="0">なし</option>
+            <option value="1">★</option>
+            <option value="2">★★</option>
+            <option value="3">★★★</option>
+            <option value="4">★★★★</option>
+            <option value="5">★★★★★</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">サムネイル URL <em class="opt">任意</em></span>
+        <input type="url" id="fThumb" placeholder="カードに表示する画像（未指定なら自動 / プレースホルダ）">
+      </label>
+
+      <label class="check">
+        <input type="checkbox" id="fFav">
+        <span>お気に入りに追加する</span>
+      </label>
+    </div>
+
+    <div class="dialog-foot">
+      <button type="button" class="ghost-btn danger" id="deleteBtn" hidden>削除</button>
+      <span class="spacer"></span>
+      <button type="button" class="ghost-btn" data-close>キャンセル</button>
+      <button type="submit" class="primary-btn" id="saveBtn">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- 一括貼り付けダイアログ -->
+<dialog id="bulkAddDialog" class="dialog">
+  <div class="dialog-head">
+    <h2>URL をまとめて追加</h2>
+    <button type="button" class="icon-btn" data-close aria-label="閉じる">×</button>
+  </div>
+  <div class="dialog-body">
+    <p class="dialog-note">1行に1つずつ URL を貼り付けてください。タイトルは後から編集できます。</p>
+    <textarea id="bulkUrls" rows="8" placeholder="https://www.instagram.com/reel/aaa/&#10;https://www.instagram.com/p/bbb/&#10;https://youtu.be/ccc"></textarea>
+  </div>
+  <div class="dialog-foot">
+    <span class="spacer"></span>
+    <button type="button" class="ghost-btn" data-close>キャンセル</button>
+    <button type="button" class="primary-btn" id="bulkAddRun">追加する</button>
+  </div>
+</dialog>
+
+<!-- メニュー -->
+<dialog id="menuDialog" class="dialog sheet">
+  <div class="dialog-head">
+    <h2>メニュー</h2>
+    <button type="button" class="icon-btn" data-close aria-label="閉じる">×</button>
+  </div>
+  <div class="dialog-body menu-body">
+    <h3 class="menu-head">追加</h3>
+    <button type="button" class="menu-item" id="mBulkAdd"><span>📋</span>URL をまとめて追加</button>
+
+    <h3 class="menu-head">GitHub 連携</h3>
+    <button type="button" class="menu-item" id="mGhSettings"><span>🔗</span>GitHub 連携の設定</button>
+    <button type="button" class="menu-item" id="mGhPush"><span>⬆️</span>今すぐ GitHub に反映</button>
+    <button type="button" class="menu-item" id="mGhPull"><span>⬇️</span>GitHub から読み込み直す</button>
+
+    <h3 class="menu-head">データ</h3>
+    <button type="button" class="menu-item" id="mExport"><span>⬇️</span>JSON を書き出し（公開用）</button>
+    <button type="button" class="menu-item" id="mCopy"><span>📄</span>JSON をクリップボードにコピー</button>
+    <button type="button" class="menu-item" id="mImport"><span>⬆️</span>JSON を読み込み</button>
+    <button type="button" class="menu-item" id="mSeed"><span>🔄</span>公開データを再読み込み</button>
+    <button type="button" class="menu-item danger" id="mClear"><span>🗑️</span>すべて削除</button>
+
+    <h3 class="menu-head">表示設定</h3>
+    <label class="menu-toggle">
+      <input type="checkbox" id="optAutoEmbed">
+      <span>カードで埋め込みを自動読み込み<small>オフだとサムネイルをタップして再生（軽快）</small></span>
+    </label>
+    <label class="menu-toggle">
+      <input type="checkbox" id="optShowDesc" checked>
+      <span>カードに説明文を表示</span>
+    </label>
+
+    <h3 class="menu-head">その他</h3>
+    <button type="button" class="menu-item" id="mHelp"><span>⌨️</span>キーボードショートカット</button>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+  </div>
+</dialog>
+
+<!-- GitHub 連携 -->
+<dialog id="ghDialog" class="dialog">
+  <div class="dialog-head">
+    <h2>GitHub 連携</h2>
+    <button type="button" class="icon-btn" data-close aria-label="閉じる">×</button>
+  </div>
+  <div class="dialog-body">
+    <p class="dialog-note">
+      設定すると、追加・編集・削除・並び替えがそのまま <code>data/videos.json</code> にコミットされます。
+      トークンは<b>このブラウザにだけ</b>保存され、リポジトリや書き出す JSON には含まれません。
+    </p>
+
+    <div class="field-grid">
+      <label class="field">
+        <span class="field-label">オーナー <em>必須</em></span>
+        <input type="text" id="ghOwner" placeholder="your-name" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="field">
+        <span class="field-label">リポジトリ <em>必須</em></span>
+        <input type="text" id="ghRepo" placeholder="video-gallery" autocomplete="off" spellcheck="false">
+      </label>
+    </div>
+
+    <div class="field-grid">
+      <label class="field">
+        <span class="field-label">ブランチ</span>
+        <input type="text" id="ghBranch" placeholder="main" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="field">
+        <span class="field-label">ファイルパス</span>
+        <input type="text" id="ghPath" placeholder="data/videos.json" autocomplete="off" spellcheck="false">
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field-label">アクセストークン <em>必須</em></span>
+      <input type="password" id="ghToken" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
+      <span class="field-hint">
+        Fine-grained personal access token を、<b>対象リポジトリ 1 つだけ</b>・権限は
+        <b>Contents: Read and write</b> のみ・有効期限ありで作成してください。
+      </span>
+    </label>
+    <label class="check"><input type="checkbox" id="ghShowToken"><span>トークンを表示する</span></label>
+
+    <div class="gh-status" id="ghStatus" hidden></div>
+
+    <div class="gh-conflict" id="ghConflict" hidden>
+      <p><b>GitHub 側のデータが更新されています。</b>別の端末やブラウザから編集した可能性があります。どちらを残すか選んでください。</p>
+      <div class="gh-conflict-actions">
+        <button type="button" class="ghost-btn" id="ghTakeRemote">GitHub 側を取り込む</button>
+        <button type="button" class="ghost-btn danger" id="ghTakeLocal">この端末の内容で上書き</button>
+      </div>
+    </div>
+  </div>
+  <div class="dialog-foot">
+    <button type="button" class="ghost-btn danger" id="ghDisconnect" hidden>連携を解除</button>
+    <span class="spacer"></span>
+    <button type="button" class="ghost-btn" id="ghTest">接続テスト</button>
+    <button type="button" class="primary-btn" id="ghSaveBtn">保存して同期</button>
+  </div>
+</dialog>
+
+<!-- ヘルプ -->
+<dialog id="helpDialog" class="dialog">
+  <div class="dialog-head">
+    <h2>キーボードショートカット</h2>
+    <button type="button" class="icon-btn" data-close aria-label="閉じる">×</button>
+  </div>
+  <div class="dialog-body">
+    <dl class="keys">
+      <dt><kbd>N</kbd></dt><dd>動画を追加</dd>
+      <dt><kbd>/</kbd></dt><dd>検索へ移動</dd>
+      <dt><kbd>G</kbd></dt><dd>グリッド表示</dd>
+      <dt><kbd>L</kbd></dt><dd>リスト表示</dd>
+      <dt><kbd>C</kbd></dt><dd>コンパクト表示</dd>
+      <dt><kbd>F</kbd></dt><dd>お気に入りのみ表示</dd>
+      <dt><kbd>S</kbd></dt><dd>選択モード</dd>
+      <dt><kbd>?</kbd></dt><dd>このヘルプ</dd>
+      <dt><kbd>Esc</kbd></dt><dd>閉じる / 解除</dd>
+    </dl>
+    <p class="dialog-note">JSON ファイルをこのページにドラッグ＆ドロップすると読み込めます。</p>
+  </div>
+</dialog>
+
+<!-- 拡大表示 -->
+<dialog id="lightbox" class="lightbox">
+  <button type="button" class="lightbox-close" data-close aria-label="閉じる">×</button>
+  <div class="lightbox-inner" id="lightboxInner"></div>
+  <div class="lightbox-meta" id="lightboxMeta"></div>
+  <button type="button" class="lightbox-nav prev" id="lbPrev" aria-label="前へ">‹</button>
+  <button type="button" class="lightbox-nav next" id="lbNext" aria-label="次へ">›</button>
+</dialog>
+
+<!-- モバイル用の追加ボタン。.toolbar は backdrop-filter を持つため、
+     その中に置くと position:fixed の基準がツールバーになってしまう。 -->
+<button type="button" class="fab" id="fabAdd" aria-label="動画を追加">＋</button>
+
+<div class="toast" id="toast" hidden>
+  <span id="toastMsg"></span>
+  <button type="button" id="toastAction" hidden></button>
+</div>
+
+<div class="dropzone" id="dropzone" hidden><p>JSON ファイルをドロップして読み込み</p></div>
+
+<script src="app.js"></script>
+</body>
+</html>
