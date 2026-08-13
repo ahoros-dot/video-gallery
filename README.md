@@ -66,6 +66,42 @@ npx --yes http-server web-site-test/video-gallery -p 8160 -c-1
 | 動画ファイル（`videoSrc`） | ページ内の `<video>` | 触れない |
 | 元の投稿 URL のみ | 埋め込み iframe | 埋め込み経由で触れる |
 
+### カード表示のきまり
+
+- **カードは常に 9:16。** 中身の縦横比がこれと違っても切り取らず、`object-fit: contain` で
+  全体が見えるように収めます（16:9 の YouTube なら上下に余白が出る）。
+- 拡大表示（ライトボックス）でも本来の縦横比のまま、画面内に全体が収まります。
+
+### Instagram のカバー画像は自分のリポジトリに取り込む
+
+Instagram の CDN は画像に **`cross-origin-resource-policy: same-origin`** を付けて返します。
+これは「他サイトからこの画像を読み込ませない」という指示で、ブラウザがこれを守るため、
+**`<img src="https://...cdninstagram.com/...">` は必ず失敗します。** referrerpolicy を
+どう変えても回避できません（curl では取得できてしまうので紛らわしい）。
+
+そこで、**GitHub Actions がサーバー側でカバーを取得して `covers/` に commit** します。
+サーバー側にはこの制約が効きません。
+
+| | |
+|---|---|
+| ワークフロー | `.github/workflows/fetch-covers.yml` |
+| スクリプト | `scripts/fetch-covers.mjs` |
+| 実行タイミング | `data/videos.json` が更新されたとき（手動実行も可） |
+| 保存先 | `covers/<ショートコード>.jpg` |
+
+動画を追加して同期すると、その 1〜2 分後にカバーが取り込まれ、さらに Pages の再ビルドを経て
+表示されます。**追加直後はプレースホルダのままなので、少し待ってから再読み込みしてください。**
+
+取得済みのファイルは再取得しません。取り直したいときは `covers/` から該当ファイルを消して
+ワークフローを再実行します。非公開・削除済みの投稿は取得できず、プレースホルダのままになります。
+
+> このワークフローはリポジトリに書き込みます。動かない場合は
+> Settings → Actions → General → Workflow permissions が
+> **Read and write permissions** になっているか確認してください。
+
+YouTube のサムネイルはこの仕組みを使わず、`i.ytimg.com` から直接読み込んでいます
+（CORP が付いていないため）。
+
 ### Instagram の埋め込みでは動画は再生できない
 
 **これは実装の制限ではなく Instagram 側の仕様です。** 埋め込みページ（`/embed/captioned/`）の
@@ -106,7 +142,7 @@ YouTube と Vimeo は埋め込み内で普通に再生できます。制約は I
 
 | | 埋め込み | サムネイル自動取得 |
 |---|---|---|
-| Instagram（`/p/`・`/reel/`・`/tv/`） | 表紙のみ（**動画は再生不可**） | × |
+| Instagram（`/p/`・`/reel/`・`/tv/`） | 表紙のみ（**動画は再生不可**） | ○（Actions 経由） |
 | YouTube（通常・`youtu.be`・Shorts） | ○ | ○ |
 | TikTok | ○ | × |
 | Vimeo | ○ | × |

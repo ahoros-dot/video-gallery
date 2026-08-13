@@ -39,7 +39,14 @@ const PLATFORMS = {
     canonical(ref) {
       return `https://www.instagram.com/${ref.kind}/${ref.id}/`;
     },
-    thumb() { return ''; },
+    // カバーは自分のリポジトリに取り込んだものを使う。
+    // Instagram の CDN は cross-origin-resource-policy: same-origin を返すため、
+    // 他サイトから <img> で直接読み込むことはブラウザが拒否する（curl は通るので紛らわしい）。
+    // 実際のダウンロードは GitHub Actions（.github/workflows/fetch-covers.yml）が
+    // サーバー側で行い、covers/<shortcode>.jpg として commit する。
+    thumb(ref) {
+      return ref.id ? `covers/${ref.id}.jpg` : '';
+    },
   },
   youtube: {
     label: 'YouTube',
@@ -741,11 +748,16 @@ function cardHtml(item) {
   const title = item.title || '(タイトル未設定)';
   const stars = item.rating ? '★'.repeat(item.rating) : '';
 
-  const media = thumb
-    ? `<img src="${escapeHtml(thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
-    : `<div class="placeholder" style="--ph-a:${p.color[0]};--ph-b:${p.color[1]}">
+  const placeholder = `<div class="placeholder" style="--ph-a:${p.color[0]};--ph-b:${p.color[1]}">
          <div><span>${kind === 'file' ? '🎞️' : (item.platform === 'instagram' ? '📸' : '🎬')}</span>${escapeHtml(title).slice(0, 40)}</div>
        </div>`;
+
+  // プレースホルダを下に敷き、カバー画像をその上に重ねる。
+  // カバーが取れなければ（削除済み・非公開など）img を外して下地を見せる。
+  const media = thumb
+    ? `${placeholder}<img src="${escapeHtml(thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer"
+         onerror="this.remove()">`
+    : placeholder;
 
   const mediaData = kind === 'file'
     ? `data-video="${escapeHtml(item.videoSrc)}"`
@@ -791,19 +803,12 @@ function mountEmbed(mediaEl) {
   const videoSrc = mediaEl.dataset.video;
   if (videoSrc) {
     mediaEl.dataset.mounted = '1';
-    mediaEl.classList.add('is-playing');
     const v = document.createElement('video');
     v.src = videoSrc;
     v.controls = true;
     v.autoplay = true;
     v.playsInline = true;
     v.preload = 'metadata';
-    // 実際の縦横比が分かった時点でカードをその比率に合わせる（横長動画の letterbox を防ぐ）
-    v.addEventListener('loadedmetadata', () => {
-      if (v.videoWidth && v.videoHeight) {
-        mediaEl.style.setProperty('--ratio', `${v.videoWidth} / ${v.videoHeight}`);
-      }
-    }, { once: true });
     v.addEventListener('error', () => {
       mediaEl.insertAdjacentHTML('beforeend',
         '<div class="media-error">動画を読み込めませんでした。パスを確認してください。</div>');
@@ -816,7 +821,6 @@ function mountEmbed(mediaEl) {
   const src = mediaEl.dataset.embed;
   if (!src) return;
   mediaEl.dataset.mounted = '1';
-  mediaEl.classList.add('is-playing'); // 再生中はプラットフォーム本来の縦横比に戻す
   const frame = document.createElement('iframe');
   frame.src = src;
   frame.loading = 'lazy';

@@ -1,0 +1,41 @@
+name: カバー画像の取得
+
+# data/videos.json が更新されたら、Instagram のカバー画像を取り込んで covers/ に置く。
+# ブラウザからは CDN の cross-origin-resource-policy に阻まれて取得できないため、
+# サーバー側で肩代わりしている。
+on:
+  push:
+    paths:
+      - 'data/videos.json'
+      - 'scripts/fetch-covers.mjs'
+      - '.github/workflows/fetch-covers.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# 連続で同期されたときに複数のジョブが同時に push しないようにする
+concurrency:
+  group: fetch-covers
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: カバー画像を取得
+        run: node scripts/fetch-covers.mjs
+
+      - name: 変更があればコミット
+        run: |
+          if [ -z "$(git status --porcelain covers)" ]; then
+            echo "新しいカバーはありません"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add covers
+          git commit -m "カバー画像を取得"
+          git push
