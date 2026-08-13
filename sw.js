@@ -1,5 +1,5 @@
 /* 静的アセットを編集したら CACHE_NAME を必ず上げること（古いファイルが配信され続ける） */
-const CACHE_NAME = 'video-gallery-v3';
+const CACHE_NAME = 'video-gallery-v4';
 
 const ASSETS = [
   './',

@@ -12,6 +12,12 @@ const GH_KEY = 'video-gallery:github:v1'; // トークンを含む。書き出�
 const SEED_URL = 'data/videos.json';
 const SYNC_DELAY = 2500; // 連続編集を 1 コミットにまとめる待ち時間
 
+/* 埋め込みをギャラリー内に閉じ込めるための sandbox。
+   allow-top-navigation と allow-popups を与えないことで、埋め込み側が
+   親ページごと Instagram 等へ遷移させたり、新しいタブを開いたりするのを防ぐ。
+   allow-scripts / allow-same-origin は埋め込みの描画と再生に必要。 */
+const EMBED_SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-presentation';
+
 /* --------------------------------------------------------------------------
    プラットフォーム定義
    -------------------------------------------------------------------------- */
@@ -94,6 +100,16 @@ const PLATFORMS = {
     match() { return null; },
     embed() { return ''; },
     canonical(ref) { return ref.raw; },
+    thumb() { return ''; },
+  },
+  // 動画ファイルを自前で持っている項目。埋め込みを使わずページ内で再生する。
+  file: {
+    label: '動画ファイル',
+    color: ['#2f7d5c', '#1f5f45'],
+    ratio: '9 / 16',
+    match() { return null; },
+    embed() { return ''; },
+    canonical(ref) { return ref.raw || ''; },
     thumb() { return ''; },
   },
 };
@@ -329,6 +345,59 @@ async function ghPutFile(text, sha, message) {
   return { sha: body.content?.sha || null };
 }
 
+/* --- 動画ファイルのアップロード ------------------------------------------ */
+
+const UPLOAD_WARN = 25 * 1024 * 1024; // これを超えたら確認する
+const UPLOAD_MAX = 60 * 1024 * 1024;  // base64 化で約1.33倍になるため、これ以上は止める
+
+function safeFileName(name) {
+  const dot = name.lastIndexOf('.');
+  const ext = (dot > 0 ? name.slice(dot + 1) : 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp4';
+  // 日本語のファイル名は URL やパスで扱いづらいので ASCII に落とす。
+  // 落とした結果がほぼ空（例:「夏の海 リール(1).MP4」→「1」）なら video を使う。
+  let base = (dot > 0 ? name.slice(0, dot) : name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+  if (base.replace(/-/g, '').length < 2) base = 'video';
+  const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  return `${base}-${stamp}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+}
+
+/** 動画ファイルをリポジトリの media/ にコミットし、そのパスを返す。 */
+async function uploadVideoFile(file) {
+  if (!ghReady()) {
+    throw new Error('先に GitHub 連携を設定してください（メニュー →「GitHub 連携の設定」）');
+  }
+  if (file.size > UPLOAD_MAX) {
+    throw new Error(`ファイルが大きすぎます（${(file.size / 1048576).toFixed(1)}MB）。60MB 以下にしてください`);
+  }
+
+  const path = `media/${safeFileName(file.name)}`;
+  const buf = new Uint8Array(await file.arrayBuffer());
+
+  let bin = '';
+  const CHUNK = 0x8000;
+  for (let i = 0; i < buf.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, buf.subarray(i, i + CHUNK));
+  }
+
+  const url = `https://api.github.com/repos/${encodeURIComponent(gh.owner)}/${encodeURIComponent(gh.repo)}/contents/${path}`;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: `動画を追加: ${path}`,
+      content: btoa(bin),
+      branch: gh.branch || 'main',
+    }),
+  });
+  if (!res.ok) throw new Error(ghErrorMessage(res.status));
+
+  return path;
+}
+
 function parseItemsJson(text) {
   if (!text.trim()) return [];
   const data = JSON.parse(text);
@@ -468,12 +537,21 @@ function renderSync() {
 /** 保存形式・シード形式の両方を受け取って正規化する。 */
 function normalize(raw, index) {
   const url = String(raw.url || '').trim();
+  const videoSrc = String(raw.videoSrc || '').trim();
   const det = detect(url);
   const now = new Date().toISOString();
+
+  // URL があればそこから判定し、動画ファイルだけの項目は 'file' 扱いにする。
+  // 保存済みの platform を優先しないのは、URL を後から足したときに古い値が残るため。
+  let platform = 'other';
+  if (url) platform = det.platform;
+  else if (videoSrc) platform = 'file';
+
   return {
     id: raw.id || uid(),
     url,
-    platform: raw.platform && PLATFORMS[raw.platform] ? raw.platform : det.platform,
+    videoSrc,
+    platform,
     ref: det.ref,
     title: String(raw.title || '').trim(),
     description: String(raw.description || '').trim(),
@@ -596,7 +674,7 @@ function render() {
   renderBulkbar();
 
   if (prefs.autoEmbed) {
-    gallery.querySelectorAll('.card-media[data-embed]').forEach((el) => mountEmbed(el));
+    gallery.querySelectorAll('.card-media[data-embed], .card-media[data-video]').forEach((el) => mountEmbed(el));
   }
 }
 
@@ -647,8 +725,16 @@ function renderBulkbar() {
   $('#bulkCount').textContent = `${state.selected.size}件を選択中`;
 }
 
+/** その項目をどう再生するか。file が最優先（Instagram を経由しない）。 */
+function playbackKind(item) {
+  if (item.videoSrc) return 'file';
+  if (embedUrlOf(item)) return 'embed';
+  return 'link';
+}
+
 function cardHtml(item) {
   const p = PLATFORMS[item.platform] || PLATFORMS.other;
+  const kind = playbackKind(item);
   const embed = embedUrlOf(item);
   const thumb = item.thumbnail || p.thumb(item.ref || {});
   const link = p.canonical(item.ref || { raw: item.url }) || item.url;
@@ -658,19 +744,21 @@ function cardHtml(item) {
   const media = thumb
     ? `<img src="${escapeHtml(thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
     : `<div class="placeholder" style="--ph-a:${p.color[0]};--ph-b:${p.color[1]}">
-         <div><span>${item.platform === 'instagram' ? '📸' : '🎬'}</span>${escapeHtml(title).slice(0, 40)}</div>
+         <div><span>${kind === 'file' ? '🎞️' : (item.platform === 'instagram' ? '📸' : '🎬')}</span>${escapeHtml(title).slice(0, 40)}</div>
        </div>`;
 
-  const playable = Boolean(embed);
+  const mediaData = kind === 'file'
+    ? `data-video="${escapeHtml(item.videoSrc)}"`
+    : (kind === 'embed' ? `data-embed="${escapeHtml(embed)}"` : '');
 
   return `
   <article class="card${state.selected.has(item.id) ? ' is-selected' : ''}" data-id="${item.id}"
       ${state.sort === 'manual' && !state.selectMode ? 'draggable="true"' : ''}>
     ${state.selectMode ? `<input type="checkbox" class="card-check" data-act="select" ${state.selected.has(item.id) ? 'checked' : ''} aria-label="選択">` : ''}
-    <div class="card-media" style="--ratio:${p.ratio}" ${playable ? `data-embed="${escapeHtml(embed)}"` : ''}>
+    <div class="card-media" style="--ratio:${p.ratio}" ${mediaData}>
       ${media}
       <span class="badge-platform">${escapeHtml(p.label)}</span>
-      ${playable
+      ${kind !== 'link'
         ? `<button type="button" class="play-overlay" data-act="play" aria-label="再生"><span class="play-icon">▶</span></button>`
         : `<a class="play-overlay" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" aria-label="開く"><span class="play-icon">↗</span></a>`}
       ${state.sort === 'manual' && !state.selectMode ? '<button type="button" class="drag-handle" data-act="drag" aria-label="並び替え">⋮⋮</button>' : ''}
@@ -695,9 +783,36 @@ function cardHtml(item) {
   </article>`;
 }
 
-/** サムネイルを iframe に差し替える。 */
+/** サムネイルを実際のプレイヤーに差し替える。 */
 function mountEmbed(mediaEl) {
   if (!mediaEl || mediaEl.dataset.mounted) return;
+
+  // 自前の動画ファイルは iframe を使わず、そのままページ内で再生する
+  const videoSrc = mediaEl.dataset.video;
+  if (videoSrc) {
+    mediaEl.dataset.mounted = '1';
+    mediaEl.classList.add('is-playing');
+    const v = document.createElement('video');
+    v.src = videoSrc;
+    v.controls = true;
+    v.autoplay = true;
+    v.playsInline = true;
+    v.preload = 'metadata';
+    // 実際の縦横比が分かった時点でカードをその比率に合わせる（横長動画の letterbox を防ぐ）
+    v.addEventListener('loadedmetadata', () => {
+      if (v.videoWidth && v.videoHeight) {
+        mediaEl.style.setProperty('--ratio', `${v.videoWidth} / ${v.videoHeight}`);
+      }
+    }, { once: true });
+    v.addEventListener('error', () => {
+      mediaEl.insertAdjacentHTML('beforeend',
+        '<div class="media-error">動画を読み込めませんでした。パスを確認してください。</div>');
+    });
+    mediaEl.appendChild(v);
+    mediaEl.querySelector('.play-overlay')?.remove();
+    return;
+  }
+
   const src = mediaEl.dataset.embed;
   if (!src) return;
   mediaEl.dataset.mounted = '1';
@@ -705,7 +820,8 @@ function mountEmbed(mediaEl) {
   const frame = document.createElement('iframe');
   frame.src = src;
   frame.loading = 'lazy';
-  frame.allow = 'autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen';
+  frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+  frame.setAttribute('sandbox', EMBED_SANDBOX);
   frame.allowFullscreen = true;
   frame.referrerPolicy = 'no-referrer-when-downgrade';
   frame.title = '埋め込み動画';
@@ -799,6 +915,8 @@ function openItemDialog(id) {
   const it = id ? findItem(id) : null;
 
   $('#dialogTitle').textContent = it ? '動画を編集' : '動画を追加';
+  $('#fVideo').value = it?.videoSrc || '';
+  $('#uploadProgress').hidden = true;
   $('#fUrl').value = it?.url || '';
   $('#fTitle').value = it?.title || '';
   $('#fDesc').value = it?.description || '';
@@ -810,8 +928,25 @@ function openItemDialog(id) {
   $('#deleteBtn').hidden = !it;
 
   updateUrlHint();
+  updateFilePreview();
   $('#itemDialog').showModal();
-  setTimeout(() => $(it ? '#fTitle' : '#fUrl').focus(), 60);
+  setTimeout(() => $(it ? '#fTitle' : '#fVideo').focus(), 60);
+}
+
+/** 動画ファイルが指定されていれば、フォーム内で実際に再生して確認できるようにする。 */
+function updateFilePreview() {
+  const src = $('#fVideo').value.trim();
+  const slot = $('#filePreview');
+  const embedSlot = $('#formPreview');
+
+  slot.innerHTML = '';
+  slot.hidden = !src;
+  if (!src) return;
+
+  // 動画ファイルがあるときは埋め込みプレビューは不要
+  embedSlot.hidden = true;
+  embedSlot.innerHTML = '';
+  slot.innerHTML = `<video src="${escapeHtml(src)}" controls playsinline preload="metadata"></video>`;
 }
 
 function updateUrlHint() {
@@ -847,10 +982,12 @@ function updateUrlHint() {
   hint.textContent = `✓ ${p.label} として認識しました`;
 
   const embed = p.embed(ref);
-  if (embed) {
+  // 自前の動画ファイルがあるなら、そちらを再生するので埋め込みプレビューは出さない
+  if (embed && !$('#fVideo').value.trim()) {
     slot.hidden = false;
     slot.style.aspectRatio = p.ratio;
     slot.innerHTML = `<iframe src="${escapeHtml(embed)}" loading="lazy" title="プレビュー"
+      sandbox="${EMBED_SANDBOX}"
       allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   }
 }
@@ -858,10 +995,20 @@ function updateUrlHint() {
 function submitItemForm(e) {
   e.preventDefault();
   const url = $('#fUrl').value.trim();
-  if (!url) return;
+  const videoSrc = $('#fVideo').value.trim();
+
+  // どちらか一方があればよい（動画ファイルだけの項目も許す）
+  if (!url && !videoSrc) {
+    const hint = $('#videoHint');
+    hint.className = 'field-hint ng';
+    hint.textContent = '動画ファイルか、元の投稿 URL のどちらかを入力してください。';
+    $('#fVideo').focus();
+    return;
+  }
 
   const data = {
     url,
+    videoSrc,
     title: $('#fTitle').value.trim(),
     description: $('#fDesc').value.trim(),
     tags: parseTags($('#fTags').value),
@@ -905,16 +1052,20 @@ function paintLightbox() {
   const embed = embedUrlOf(it);
   const link = p.canonical(it.ref || { raw: it.url }) || it.url;
 
-  $('#lightboxInner').innerHTML = embed
-    ? `<iframe src="${escapeHtml(embed)}" style="--ratio:${p.ratio}" title="${escapeHtml(it.title || '動画')}"
-        allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
-    : `<p>このプラットフォームは埋め込みに対応していません。</p>`;
+  const kind = playbackKind(it);
+  $('#lightboxInner').innerHTML = kind === 'file'
+    ? `<video src="${escapeHtml(it.videoSrc)}" controls autoplay playsinline
+        ${it.thumbnail ? `poster="${escapeHtml(it.thumbnail)}"` : ''}></video>`
+    : (kind === 'embed'
+      ? `<iframe src="${escapeHtml(embed)}" style="--ratio:${p.ratio}" title="${escapeHtml(it.title || '動画')}"
+          sandbox="${EMBED_SANDBOX}"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
+      : '<p>このプラットフォームは埋め込みに対応していません。</p>');
 
   $('#lightboxMeta').innerHTML = `
     <h3>${escapeHtml(it.title || '(タイトル未設定)')}</h3>
     ${it.description ? `<p>${escapeHtml(it.description)}</p>` : ''}
-    <p><a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">元の投稿を開く ↗</a>
-       ・ ${state.lightboxIndex + 1} / ${state.lightboxIds.length}</p>`;
+    <p>${link ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">元の投稿を開く ↗</a>・` : ''}${state.lightboxIndex + 1} / ${state.lightboxIds.length}</p>`;
 
   const only = state.lightboxIds.length < 2;
   $('#lbPrev').hidden = only;
@@ -1252,6 +1403,44 @@ function bindEvents() {
   $('#itemForm').addEventListener('submit', submitItemForm);
   $('#fUrl').addEventListener('input', debounce(updateUrlHint, 400));
   $('#fUrl').addEventListener('paste', () => setTimeout(updateUrlHint, 50));
+  $('#fVideo').addEventListener('input', debounce(() => { updateFilePreview(); updateUrlHint(); }, 400));
+
+  $('#videoPickBtn').addEventListener('click', () => $('#videoFile').click());
+  $('#videoFile').addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    const mb = (file.size / 1048576).toFixed(1);
+    if (file.size > UPLOAD_WARN && file.size <= UPLOAD_MAX
+      && !confirm(`${mb}MB あります。リポジトリに保存され、一度コミットすると履歴から消せません。続けますか？`)) {
+      return;
+    }
+
+    const prog = $('#uploadProgress');
+    const btn = $('#videoPickBtn');
+    prog.hidden = false;
+    prog.className = 'upload-progress';
+    prog.textContent = `アップロード中… (${mb}MB) 大きいファイルは時間がかかります`;
+    btn.disabled = true;
+
+    try {
+      const path = await uploadVideoFile(file);
+      $('#fVideo').value = path;
+      updateFilePreview();
+      updateUrlHint();
+      prog.className = 'upload-progress ok';
+      prog.textContent = `${path} を追加しました`;
+      if (!$('#fTitle').value.trim()) {
+        $('#fTitle').value = file.name.replace(/\.[^.]+$/, '');
+      }
+    } catch (err) {
+      prog.className = 'upload-progress ng';
+      prog.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+    }
+  });
   $('#deleteBtn').addEventListener('click', () => {
     const id = state.editingId;
     $('#itemDialog').close();
@@ -1264,6 +1453,7 @@ function bindEvents() {
 
   $('#itemDialog').addEventListener('close', () => {
     $('#formPreview').innerHTML = '';
+    $('#filePreview').innerHTML = ''; // 再生を止める
     state.editingId = null;
   });
   $('#lightbox').addEventListener('close', () => { $('#lightboxInner').innerHTML = ''; });

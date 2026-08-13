@@ -113,9 +113,24 @@
     </div>
 
     <div class="dialog-body">
+      <div class="field">
+        <span class="field-label">動画ファイル <em class="opt">推奨</em></span>
+        <div class="upload-row">
+          <button type="button" class="ghost-btn" id="videoPickBtn">端末から選ぶ</button>
+          <input type="file" id="videoFile" accept="video/*" hidden>
+          <input type="text" id="fVideo" placeholder="media/my-reel.mp4 または https://…" autocomplete="off" spellcheck="false">
+        </div>
+        <span class="field-hint" id="videoHint">
+          指定すると Instagram を経由せず、この動画をページ内で再生します。おすすめ動画に流されることもありません。
+        </span>
+        <div class="upload-progress" id="uploadProgress" hidden></div>
+      </div>
+
+      <div class="preview-slot" id="filePreview" hidden></div>
+
       <label class="field">
-        <span class="field-label">URL <em>必須</em></span>
-        <input type="url" id="fUrl" required placeholder="https://www.instagram.com/reel/xxxxxxxxx/" autocomplete="off">
+        <span class="field-label">元の投稿 URL <em class="opt">任意</em></span>
+        <input type="url" id="fUrl" placeholder="https://www.instagram.com/reel/xxxxxxxxx/" autocomplete="off">
         <span class="field-hint" id="urlHint">Instagram / YouTube / TikTok / Vimeo / X の URL</span>
       </label>
 
