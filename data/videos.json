@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T15:55:47.178Z",
+  "exportedAt": "2026-08-15T15:56:53.101Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -501,6 +501,24 @@
       "createdAt": "2026-08-15T15:53:38.565Z",
       "updatedAt": "2026-08-15T15:55:44.672Z",
       "order": 27
+    },
+    {
+      "id": "vmsuk6syndf90i",
+      "url": "https://www.youtube.com/watch?v=KVbP57boNyc&list=PLIBhfAq00kf0&index=2",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】私のリズムで",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T15:56:50.591Z",
+      "updatedAt": "2026-08-15T15:56:50.591Z",
+      "order": 28
     }
   ]
 }
