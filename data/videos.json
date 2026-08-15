@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:04:44.688Z",
+  "exportedAt": "2026-08-15T16:05:28.513Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -699,6 +699,24 @@
       "createdAt": "2026-08-15T16:04:42.171Z",
       "updatedAt": "2026-08-15T16:04:42.171Z",
       "order": 38
+    },
+    {
+      "id": "vmsukhubopfn4v",
+      "url": "https://www.youtube.com/watch?v=qR0ogEi2WRc&list=PLIBhfAq00kf0&index=19",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】ええねんで",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:05:25.572Z",
+      "updatedAt": "2026-08-15T16:05:25.572Z",
+      "order": 39
     }
   ]
 }
