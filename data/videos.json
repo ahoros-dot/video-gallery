@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:03:33.941Z",
+  "exportedAt": "2026-08-15T16:04:11.511Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -663,6 +663,24 @@
       "createdAt": "2026-08-15T16:03:31.439Z",
       "updatedAt": "2026-08-15T16:03:31.439Z",
       "order": 36
+    },
+    {
+      "id": "vmsukg6tkngffy",
+      "url": "https://www.youtube.com/watch?v=meaTZnY28hM&list=PLIBhfAq00kf0&index=21",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】晴れたふりして",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:04:08.456Z",
+      "updatedAt": "2026-08-15T16:04:08.456Z",
+      "order": 37
     }
   ]
 }
