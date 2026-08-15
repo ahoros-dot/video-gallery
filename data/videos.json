@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:12:03.512Z",
+  "exportedAt": "2026-08-15T16:12:42.510Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -897,6 +897,24 @@
       "createdAt": "2026-08-15T16:12:00.267Z",
       "updatedAt": "2026-08-15T16:12:00.267Z",
       "order": 49
+    },
+    {
+      "id": "vmsukr5hf49nm0",
+      "url": "https://www.youtube.com/watch?v=ZDY1kci8VCY&list=PLIBhfAq00kf0&index=8",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】まっすぐな傷",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:12:39.939Z",
+      "updatedAt": "2026-08-15T16:12:39.939Z",
+      "order": 50
     }
   ]
 }
