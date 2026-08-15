@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:15:10.520Z",
+  "exportedAt": "2026-08-15T16:17:03.686Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -987,6 +987,24 @@
       "createdAt": "2026-08-15T16:15:07.924Z",
       "updatedAt": "2026-08-15T16:15:07.924Z",
       "order": 54
+    },
+    {
+      "id": "vmsukwr27pwpkz",
+      "url": "https://www.youtube.com/watch?v=9ClTxaHrXS8&list=PLIBhfAq00kf0&index=3",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】君に晴れ",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:17:01.183Z",
+      "updatedAt": "2026-08-15T16:17:01.183Z",
+      "order": 55
     }
   ]
 }
