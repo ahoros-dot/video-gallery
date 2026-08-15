@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:17:38.285Z",
+  "exportedAt": "2026-08-15T16:18:22.434Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -1023,6 +1023,24 @@
       "createdAt": "2026-08-15T16:17:35.769Z",
       "updatedAt": "2026-08-15T16:17:35.769Z",
       "order": 56
+    },
+    {
+      "id": "vmsukyftjxbcjc",
+      "url": "https://www.youtube.com/watch?v=8beXLV0WLeE&list=PLIBhfAq00kf0&index=1",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】なんとかなるやろ（フィジーク編）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:18:19.927Z",
+      "updatedAt": "2026-08-15T16:18:19.927Z",
+      "order": 57
     }
   ]
 }
