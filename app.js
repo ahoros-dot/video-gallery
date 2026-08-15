@@ -45,7 +45,7 @@ const PLATFORMS = {
     // 実際のダウンロードは GitHub Actions（.github/workflows/fetch-covers.yml）が
     // サーバー側で行い、covers/<shortcode>.jpg として commit する。
     thumb(ref) {
-      return ref.id ? `covers/${ref.id}.jpg` : '';
+      return ref.id ? [`covers/${ref.id}.jpg`] : [];
     },
   },
   youtube: {
@@ -59,9 +59,21 @@ const PLATFORMS = {
       if (m) return { id: m[1], kind: 'shorts' };
       return null;
     },
-    embed(ref) { return `https://www.youtube-nocookie.com/embed/${ref.id}`; },
+    // rel=0 で終了後のおすすめを同一チャンネル内に限定する（他人の動画へ流れにくくする）。
+    // playsinline=1 は iOS で勝手に全画面にならないようにするため。
+    embed(ref) {
+      return `https://www.youtube-nocookie.com/embed/${ref.id}?rel=0&playsinline=1`;
+    },
     canonical(ref) { return `https://www.youtube.com/watch?v=${ref.id}`; },
-    thumb(ref) { return `https://i.ytimg.com/vi/${ref.id}/hqdefault.jpg`; },
+    // oar2 は元の縦横比のまま返す（Shorts なら 1080x1920、通常動画なら 1920x1080）。
+    // hqdefault は常に 480x360 に letterbox されるので、縦動画だと上下が黒帯になる。
+    // ただし oar2 は非公開の裏口なので、無い場合に備えて hqdefault へ落とす。
+    thumb(ref) {
+      return [
+        `https://i.ytimg.com/vi/${ref.id}/oar2.jpg`,
+        `https://i.ytimg.com/vi/${ref.id}/hqdefault.jpg`,
+      ];
+    },
   },
   tiktok: {
     label: 'TikTok',
@@ -73,7 +85,7 @@ const PLATFORMS = {
     },
     embed(ref) { return `https://www.tiktok.com/embed/v2/${ref.id}`; },
     canonical(ref) { return `https://www.tiktok.com/video/${ref.id}`; },
-    thumb() { return ''; },
+    thumb() { return []; },
   },
   vimeo: {
     label: 'Vimeo',
@@ -85,7 +97,7 @@ const PLATFORMS = {
     },
     embed(ref) { return `https://player.vimeo.com/video/${ref.id}`; },
     canonical(ref) { return `https://vimeo.com/${ref.id}`; },
-    thumb() { return ''; },
+    thumb() { return []; },
   },
   x: {
     label: 'X / Twitter',
@@ -98,7 +110,7 @@ const PLATFORMS = {
     // X は iframe 埋め込みに制限があるため、リンクカードとして扱う
     embed() { return ''; },
     canonical(ref) { return `https://x.com/${ref.user || 'i'}/status/${ref.id}`; },
-    thumb() { return ''; },
+    thumb() { return []; },
   },
   other: {
     label: 'その他',
@@ -107,7 +119,7 @@ const PLATFORMS = {
     match() { return null; },
     embed() { return ''; },
     canonical(ref) { return ref.raw; },
-    thumb() { return ''; },
+    thumb() { return []; },
   },
   // 動画ファイルを自前で持っている項目。埋め込みを使わずページ内で再生する。
   file: {
@@ -117,7 +129,7 @@ const PLATFORMS = {
     match() { return null; },
     embed() { return ''; },
     canonical(ref) { return ref.raw || ''; },
-    thumb() { return ''; },
+    thumb() { return []; },
   },
 };
 
@@ -732,6 +744,22 @@ function renderBulkbar() {
   $('#bulkCount').textContent = `${state.selected.size}件を選択中`;
 }
 
+/** カバー画像が読めなかったら次の候補へ。尽きたらプレースホルダを見せる。
+ *  インラインの onerror / onload から呼ぶのでグローバルに置いている。 */
+function coverFallback(img) {
+  const rest = (img.dataset.fallback || '').split('|').filter(Boolean);
+  if (!rest.length) { img.remove(); return; }
+  img.dataset.fallback = rest.slice(1).join('|');
+  img.src = rest[0];
+}
+
+/** YouTube はサムネイルが無い動画に対して 404 ではなく
+ *  120x90 の灰色画像を 200 で返してくる。読み込めたように見えるので、
+ *  サイズで判定して失敗扱いにする。 */
+function coverLoaded(img) {
+  if (img.naturalWidth && img.naturalWidth <= 120) coverFallback(img);
+}
+
 /** その項目をどう再生するか。file が最優先（Instagram を経由しない）。 */
 function playbackKind(item) {
   if (item.videoSrc) return 'file';
@@ -743,7 +771,8 @@ function cardHtml(item) {
   const p = PLATFORMS[item.platform] || PLATFORMS.other;
   const kind = playbackKind(item);
   const embed = embedUrlOf(item);
-  const thumb = item.thumbnail || p.thumb(item.ref || {});
+  // 候補を順に試す。手動指定があればそれを最優先。
+  const covers = item.thumbnail ? [item.thumbnail] : p.thumb(item.ref || {});
   const link = p.canonical(item.ref || { raw: item.url }) || item.url;
   const title = item.title || '(タイトル未設定)';
   const stars = item.rating ? '★'.repeat(item.rating) : '';
@@ -753,10 +782,11 @@ function cardHtml(item) {
        </div>`;
 
   // プレースホルダを下に敷き、カバー画像をその上に重ねる。
-  // カバーが取れなければ（削除済み・非公開など）img を外して下地を見せる。
-  const media = thumb
-    ? `${placeholder}<img src="${escapeHtml(thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer"
-         onerror="this.remove()">`
+  // 候補が尽きたら（削除済み・非公開など）img を外して下地を見せる。
+  const media = covers.length
+    ? `${placeholder}<img src="${escapeHtml(covers[0])}" alt="" loading="lazy" referrerpolicy="no-referrer"
+         data-fallback="${escapeHtml(covers.slice(1).join('|'))}"
+         onerror="coverFallback(this)" onload="coverLoaded(this)">`
     : placeholder;
 
   const mediaData = kind === 'file'
