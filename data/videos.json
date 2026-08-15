@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-13T14:13:22.483Z",
+  "exportedAt": "2026-08-15T15:53:41.066Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -483,6 +483,24 @@
       "createdAt": "2026-08-13T14:11:29.894Z",
       "updatedAt": "2026-08-13T14:11:29.894Z",
       "order": 26
+    },
+    {
+      "id": "vmsuk2oslc0sg5",
+      "url": "https://www.youtube.com/watch?v=H85MPVbxktc&list=PLIBhfAq00kf0",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】夏がくれるエネルギー（Part1）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T15:53:38.565Z",
+      "updatedAt": "2026-08-15T15:53:38.565Z",
+      "order": 27
     }
   ]
 }
