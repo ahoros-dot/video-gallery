@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:07:11.516Z",
+  "exportedAt": "2026-08-15T16:07:41.517Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -771,6 +771,24 @@
       "createdAt": "2026-08-15T16:07:08.635Z",
       "updatedAt": "2026-08-15T16:07:08.635Z",
       "order": 42
+    },
+    {
+      "id": "vmsukkoufg3bgd",
+      "url": "https://www.youtube.com/watch?v=c6rwsbTw8Mk&list=PLIBhfAq00kf0&index=15",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】ま、いっか",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:07:38.439Z",
+      "updatedAt": "2026-08-15T16:07:38.439Z",
+      "order": 43
     }
   ]
 }
