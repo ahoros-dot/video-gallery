@@ -9,20 +9,32 @@ on:
       - 'data/videos.json'
       - 'scripts/fetch-covers.mjs'
       - '.github/workflows/fetch-covers.yml'
+  # 取りこぼしの保険。毎日 06:17 JST（21:17 UTC）に一度だけ確認する
+  schedule:
+    - cron: '17 21 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
-# 連続で同期されたときに複数のジョブが同時に push しないようにする
+# 連続して同期されたときは、待機中の古いジョブを打ち切って最後の1回にまとめる。
+# スクリプトは未取得のカバーを毎回すべて処理するので、打ち切っても取りこぼさない。
 concurrency:
   group: fetch-covers
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
+      # まとめ待ち。この間に次の同期が来たらこのジョブは打ち切られ、
+      # 新しいジョブが最新の data/videos.json を読んでまとめて取得する。
+      # 動画を続けて追加しても、コミットは最後の1つだけになる。
+      - name: 後続の同期を待ち合わせる
+        if: github.event_name == 'push'
+        run: sleep 150
+
+      # 待ってから checkout することで、待機中に増えた分も一緒に処理できる
       - uses: actions/checkout@v4
 
       - name: カバー画像を取得
@@ -34,8 +46,9 @@ jobs:
             echo "新しいカバーはありません"
             exit 0
           fi
+          COUNT=$(git status --porcelain covers | wc -l)
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add covers
-          git commit -m "カバー画像を取得"
+          git commit -m "カバー画像を取得（${COUNT}件）"
           git push
