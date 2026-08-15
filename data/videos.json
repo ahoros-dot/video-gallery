@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:17:03.686Z",
+  "exportedAt": "2026-08-15T16:17:38.285Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -1005,6 +1005,24 @@
       "createdAt": "2026-08-15T16:17:01.183Z",
       "updatedAt": "2026-08-15T16:17:01.183Z",
       "order": 55
+    },
+    {
+      "id": "vmsukxhqxrs7fr",
+      "url": "https://www.youtube.com/watch?v=14-Z3n8HzXw&list=PLIBhfAq00kf0&index=2",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】なんでやねん（Part7）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:17:35.769Z",
+      "updatedAt": "2026-08-15T16:17:35.769Z",
+      "order": 56
     }
   ]
 }
