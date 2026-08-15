@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:03:01.509Z",
+  "exportedAt": "2026-08-15T16:03:33.941Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -645,6 +645,24 @@
       "createdAt": "2026-08-15T16:02:58.420Z",
       "updatedAt": "2026-08-15T16:02:58.420Z",
       "order": 35
+    },
+    {
+      "id": "vmsukfe9bjxr9n",
+      "url": "https://www.youtube.com/watch?v=Ch91ZOWFUO4&list=PLIBhfAq00kf0&index=22",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】ええねん（Part 6）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:03:31.439Z",
+      "updatedAt": "2026-08-15T16:03:31.439Z",
+      "order": 36
     }
   ]
 }
