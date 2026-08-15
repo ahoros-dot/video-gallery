@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:02:26.576Z",
+  "exportedAt": "2026-08-15T16:03:01.509Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -627,6 +627,24 @@
       "createdAt": "2026-08-15T16:02:24.072Z",
       "updatedAt": "2026-08-15T16:02:24.072Z",
       "order": 34
+    },
+    {
+      "id": "vmsukeos41cbp9",
+      "url": "https://www.youtube.com/watch?v=nzbltXkxy5o&list=PLIBhfAq00kf0&index=23",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】Rainy Afternoon",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:02:58.420Z",
+      "updatedAt": "2026-08-15T16:02:58.420Z",
+      "order": 35
     }
   ]
 }
