@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:12:42.510Z",
+  "exportedAt": "2026-08-15T16:13:20.510Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -915,6 +915,24 @@
       "createdAt": "2026-08-15T16:12:39.939Z",
       "updatedAt": "2026-08-15T16:12:39.939Z",
       "order": 50
+    },
+    {
+      "id": "vmsukryd7u80sw",
+      "url": "https://www.youtube.com/watch?v=4lerCJeoOq8&list=PLIBhfAq00kf0&index=7",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】影を越えて",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:13:17.371Z",
+      "updatedAt": "2026-08-15T16:13:17.371Z",
+      "order": 51
     }
   ]
 }
