@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:13:57.523Z",
+  "exportedAt": "2026-08-15T16:14:29.514Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -951,6 +951,24 @@
       "createdAt": "2026-08-15T16:13:54.565Z",
       "updatedAt": "2026-08-15T16:13:54.565Z",
       "order": 52
+    },
+    {
+      "id": "vmsuktfodjrbaq",
+      "url": "https://www.youtube.com/watch?v=IX5DwXDJQY0&list=PLIBhfAq00kf0&index=5",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】なんでやねん（Part 9）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:14:26.461Z",
+      "updatedAt": "2026-08-15T16:14:26.461Z",
+      "order": 53
     }
   ]
 }
