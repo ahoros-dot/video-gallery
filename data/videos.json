@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:05:28.513Z",
+  "exportedAt": "2026-08-15T16:06:03.513Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -717,6 +717,24 @@
       "createdAt": "2026-08-15T16:05:25.572Z",
       "updatedAt": "2026-08-15T16:05:25.572Z",
       "order": 39
+    },
+    {
+      "id": "vmsukil5b6i8q4",
+      "url": "https://www.youtube.com/watch?v=m0Aax1LPYNY&list=PLIBhfAq00kf0&index=18",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】君と越える明日（Part1）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:06:00.335Z",
+      "updatedAt": "2026-08-15T16:06:00.335Z",
+      "order": 40
     }
   ]
 }
