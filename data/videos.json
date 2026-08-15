@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:06:03.513Z",
+  "exportedAt": "2026-08-15T16:06:36.303Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -735,6 +735,24 @@
       "createdAt": "2026-08-15T16:06:00.335Z",
       "updatedAt": "2026-08-15T16:06:00.335Z",
       "order": 40
+    },
+    {
+      "id": "vmsukjayv8rush",
+      "url": "https://www.youtube.com/watch?v=tzXH5qywv7E&list=PLIBhfAq00kf0&index=17",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】積み上がるもの",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:06:33.799Z",
+      "updatedAt": "2026-08-15T16:06:33.799Z",
+      "order": 41
     }
   ]
 }
