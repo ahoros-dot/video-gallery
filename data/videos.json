@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:01:15.719Z",
+  "exportedAt": "2026-08-15T16:01:52.516Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -591,6 +591,24 @@
       "createdAt": "2026-08-15T16:01:13.217Z",
       "updatedAt": "2026-08-15T16:01:13.217Z",
       "order": 32
+    },
+    {
+      "id": "vmsukd7m02qt45",
+      "url": "https://www.youtube.com/watch?v=8miy5a7ogmM&list=PLIBhfAq00kf0&index=25",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】街角の風の中",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:01:49.512Z",
+      "updatedAt": "2026-08-15T16:01:49.512Z",
+      "order": 33
     }
   ]
 }
