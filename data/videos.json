@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T15:59:16.090Z",
+  "exportedAt": "2026-08-15T16:00:32.511Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -555,6 +555,24 @@
       "createdAt": "2026-08-15T15:59:13.589Z",
       "updatedAt": "2026-08-15T15:59:13.589Z",
       "order": 30
+    },
+    {
+      "id": "vmsukbho1gvht5",
+      "url": "https://www.youtube.com/watch?v=3yI1FiThkEE&list=PLIBhfAq00kf0&index=27",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI生成】ステップ・バイ・ビート",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:00:29.233Z",
+      "updatedAt": "2026-08-15T16:00:29.233Z",
+      "order": 31
     }
   ]
 }
