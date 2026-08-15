@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:04:11.511Z",
+  "exportedAt": "2026-08-15T16:04:44.688Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -681,6 +681,24 @@
       "createdAt": "2026-08-15T16:04:08.456Z",
       "updatedAt": "2026-08-15T16:04:08.456Z",
       "order": 37
+    },
+    {
+      "id": "vmsukgwu3kowrg",
+      "url": "https://www.youtube.com/watch?v=hsQt4DG-p2E&list=PLIBhfAq00kf0&index=20",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】だってワタシは！（Remix）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:04:42.171Z",
+      "updatedAt": "2026-08-15T16:04:42.171Z",
+      "order": 38
     }
   ]
 }
