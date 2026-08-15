@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T15:56:53.101Z",
+  "exportedAt": "2026-08-15T15:58:02.461Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -519,6 +519,24 @@
       "createdAt": "2026-08-15T15:56:50.591Z",
       "updatedAt": "2026-08-15T15:56:50.591Z",
       "order": 28
+    },
+    {
+      "id": "vmsuk8ah8uqfn5",
+      "url": "https://www.youtube.com/watch?v=KKYnIhMdNy8&list=PLIBhfAq00kf0&index=3",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】ええねん（Part 5）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T15:57:59.948Z",
+      "updatedAt": "2026-08-15T15:57:59.948Z",
+      "order": 29
     }
   ]
 }
