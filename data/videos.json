@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:06:36.303Z",
+  "exportedAt": "2026-08-15T16:07:11.516Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -753,6 +753,24 @@
       "createdAt": "2026-08-15T16:06:33.799Z",
       "updatedAt": "2026-08-15T16:06:33.799Z",
       "order": 41
+    },
+    {
+      "id": "vmsukk1ujn86ri",
+      "url": "https://www.youtube.com/watch?v=V6jKvGhcf3c&list=PLIBhfAq00kf0&index=16",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】煙とギター（Part1）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:07:08.635Z",
+      "updatedAt": "2026-08-15T16:07:08.635Z",
+      "order": 42
     }
   ]
 }
