@@ -177,7 +177,6 @@ const prefs = {
   theme: 'auto',
   view: 'grid',
   sort: 'manual',
-  autoEmbed: false,
   showDesc: true,
 };
 
@@ -681,6 +680,7 @@ function render() {
   const gallery = $('#gallery');
 
   gallery.className = `gallery view-${state.view}`;
+  activeMedia = null; // 描き直すと再生中の要素ごと消える
   gallery.innerHTML = list.map(cardHtml).join('');
 
   $('#emptyState').hidden = state.items.length > 0;
@@ -692,9 +692,9 @@ function render() {
   renderPlatformFilter();
   renderBulkbar();
 
-  if (prefs.autoEmbed) {
-    gallery.querySelectorAll('.card-media[data-embed], .card-media[data-video]').forEach((el) => mountEmbed(el));
-  }
+  // 以前あった「埋め込みの自動読み込み」は廃止した。
+  // 複数のプレイヤーを同時に載せると、埋め込みの中身は操作できないため
+  // 1 つずつ再生する約束を守れなくなる。
 }
 
 function renderStats() {
@@ -825,9 +825,43 @@ function cardHtml(item) {
   </article>`;
 }
 
+/** いま再生中のカード。同時に複数を鳴らさないよう、常に 1 つだけに保つ。 */
+let activeMedia = null;
+
+/** プレイヤーを取り外してサムネイルの状態に戻す。
+ *  埋め込みは中身を操作できないので、止めるには外すしかない。 */
+function unmountPlayer(mediaEl) {
+  if (!mediaEl || !mediaEl.dataset.mounted) return;
+
+  const v = mediaEl.querySelector('video');
+  if (v) {
+    v.pause();
+    v.removeAttribute('src');
+    v.load(); // 読み込み中の通信も止める
+    v.remove();
+  }
+  mediaEl.querySelector('iframe')?.remove();
+  mediaEl.querySelector('.media-error')?.remove();
+
+  delete mediaEl.dataset.mounted;
+  const overlay = mediaEl.querySelector('.play-overlay');
+  if (overlay) overlay.hidden = false;
+
+  if (activeMedia === mediaEl) activeMedia = null;
+}
+
+/** 再生中のものがあれば止める。 */
+function stopActivePlayer() {
+  if (activeMedia) unmountPlayer(activeMedia);
+}
+
 /** サムネイルを実際のプレイヤーに差し替える。 */
 function mountEmbed(mediaEl) {
   if (!mediaEl || mediaEl.dataset.mounted) return;
+
+  // 1 つずつしか再生しない。先に鳴っているものを止める。
+  if (activeMedia && activeMedia !== mediaEl) unmountPlayer(activeMedia);
+  activeMedia = mediaEl;
 
   // 自前の動画ファイルは iframe を使わず、そのままページ内で再生する
   const videoSrc = mediaEl.dataset.video;
@@ -844,12 +878,13 @@ function mountEmbed(mediaEl) {
         '<div class="media-error">動画を読み込めませんでした。パスを確認してください。</div>');
     });
     mediaEl.appendChild(v);
-    mediaEl.querySelector('.play-overlay')?.remove();
+    const overlay = mediaEl.querySelector('.play-overlay');
+    if (overlay) overlay.hidden = true;
     return;
   }
 
   const src = mediaEl.dataset.embed;
-  if (!src) return;
+  if (!src) { activeMedia = null; return; }
   mediaEl.dataset.mounted = '1';
   const frame = document.createElement('iframe');
   frame.src = src;
@@ -860,7 +895,8 @@ function mountEmbed(mediaEl) {
   frame.referrerPolicy = 'no-referrer-when-downgrade';
   frame.title = '埋め込み動画';
   mediaEl.appendChild(frame);
-  mediaEl.querySelector('.play-overlay')?.remove();
+  const overlay = mediaEl.querySelector('.play-overlay');
+  if (overlay) overlay.hidden = true;
 }
 
 /* --------------------------------------------------------------------------
@@ -1072,6 +1108,7 @@ function submitItemForm(e) {
    -------------------------------------------------------------------------- */
 
 function openLightbox(id) {
+  stopActivePlayer(); // カード側で鳴っているものと二重にしない
   state.lightboxIds = visibleItems().map((i) => i.id);
   state.lightboxIndex = Math.max(0, state.lightboxIds.indexOf(id));
   paintLightbox();
@@ -1261,7 +1298,6 @@ function applyTheme() {
 
 function syncControls() {
   $('#sort').value = state.sort;
-  $('#optAutoEmbed').checked = prefs.autoEmbed;
   $('#optShowDesc').checked = prefs.showDesc;
   $$('.seg-btn').forEach((b) => b.classList.toggle('is-active', b.dataset.view === state.view));
   $('#favFilter').setAttribute('aria-pressed', String(state.favOnly));
@@ -1721,11 +1757,6 @@ function bindEvents() {
     if (ghReady() && gh.dirty) { e.preventDefault(); e.returnValue = ''; }
   });
 
-  $('#optAutoEmbed').addEventListener('change', (e) => {
-    prefs.autoEmbed = e.target.checked;
-    savePrefs();
-    render();
-  });
   $('#optShowDesc').addEventListener('change', (e) => {
     prefs.showDesc = e.target.checked;
     savePrefs();
@@ -1735,6 +1766,19 @@ function bindEvents() {
   /* --- ライトボックス --- */
   $('#lbPrev').addEventListener('click', () => moveLightbox(-1));
   $('#lbNext').addEventListener('click', () => moveLightbox(1));
+
+  /* --- 同時再生の防止（保険） ---
+     ネイティブの再生ボタンやライトボックスから直接再生された場合に備え、
+     どこかで再生が始まったら他の <video> を止める。
+     play イベントは bubble しないのでキャプチャで拾う。 */
+  document.addEventListener('play', (e) => {
+    const target = e.target;
+    if (!(target instanceof HTMLMediaElement)) return;
+    document.querySelectorAll('video').forEach((v) => { if (v !== target) v.pause(); });
+    // カード側のプレイヤーが別にあれば外す
+    const own = target.closest('.card-media');
+    if (activeMedia && activeMedia !== own) unmountPlayer(activeMedia);
+  }, true);
 
   /* --- キーボード --- */
   document.addEventListener('keydown', onKeydown);
