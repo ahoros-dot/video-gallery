@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:13:20.510Z",
+  "exportedAt": "2026-08-15T16:13:57.523Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -933,6 +933,24 @@
       "createdAt": "2026-08-15T16:13:17.371Z",
       "updatedAt": "2026-08-15T16:13:17.371Z",
       "order": 51
+    },
+    {
+      "id": "vmsuksr2dtol2k",
+      "url": "https://www.youtube.com/watch?v=aEHFdCXE-cg&list=PLIBhfAq00kf0&index=6",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】太陽のリズム",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:13:54.565Z",
+      "updatedAt": "2026-08-15T16:13:54.565Z",
+      "order": 52
     }
   ]
 }
