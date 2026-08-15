@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:08:12.510Z",
+  "exportedAt": "2026-08-15T16:08:44.509Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -807,6 +807,24 @@
       "createdAt": "2026-08-15T16:08:09.235Z",
       "updatedAt": "2026-08-15T16:08:09.235Z",
       "order": 44
+    },
+    {
+      "id": "vmsukm1ko4tasx",
+      "url": "https://www.youtube.com/watch?v=_uyvkuYaE44&list=PLIBhfAq00kf0&index=13",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】Run my way（自分の道を走る）（Part1）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:08:41.592Z",
+      "updatedAt": "2026-08-15T16:08:41.592Z",
+      "order": 45
     }
   ]
 }
