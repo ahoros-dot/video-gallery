@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:01:52.516Z",
+  "exportedAt": "2026-08-15T16:02:26.576Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -609,6 +609,24 @@
       "createdAt": "2026-08-15T16:01:49.512Z",
       "updatedAt": "2026-08-15T16:01:49.512Z",
       "order": 33
+    },
+    {
+      "id": "vmsukdya0qhnct",
+      "url": "https://www.youtube.com/watch?v=uqwL_X8PWRg&list=PLIBhfAq00kf0&index=24",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】知らんけど",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:02:24.072Z",
+      "updatedAt": "2026-08-15T16:02:24.072Z",
+      "order": 34
     }
   ]
 }
