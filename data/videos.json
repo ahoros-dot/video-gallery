@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:11:24.521Z",
+  "exportedAt": "2026-08-15T16:12:03.512Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -879,6 +879,24 @@
       "createdAt": "2026-08-15T16:11:21.667Z",
       "updatedAt": "2026-08-15T16:11:21.667Z",
       "order": 48
+    },
+    {
+      "id": "vmsukqavfm3rzd",
+      "url": "https://www.youtube.com/watch?v=tnn7mOmUJuQ&list=PLIBhfAq00kf0&index=9",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】晴れた日の君へ（Part 3）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:12:00.267Z",
+      "updatedAt": "2026-08-15T16:12:00.267Z",
+      "order": 49
     }
   ]
 }
