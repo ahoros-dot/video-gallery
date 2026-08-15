@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:00:32.511Z",
+  "exportedAt": "2026-08-15T16:01:15.719Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -573,6 +573,24 @@
       "createdAt": "2026-08-15T16:00:29.233Z",
       "updatedAt": "2026-08-15T16:00:29.233Z",
       "order": 31
+    },
+    {
+      "id": "vmsukcfltrzglx",
+      "url": "https://www.youtube.com/watch?v=LKFkgMWQeqU&list=PLIBhfAq00kf0&index=26",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【尾崎豊 ファンビデオ】街角の風の中",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:01:13.217Z",
+      "updatedAt": "2026-08-15T16:01:13.217Z",
+      "order": 32
     }
   ]
 }
