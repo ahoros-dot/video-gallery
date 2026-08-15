@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:14:29.514Z",
+  "exportedAt": "2026-08-15T16:15:10.520Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -969,6 +969,24 @@
       "createdAt": "2026-08-15T16:14:26.461Z",
       "updatedAt": "2026-08-15T16:14:26.461Z",
       "order": 53
+    },
+    {
+      "id": "vmsukubo4qiohq",
+      "url": "https://www.youtube.com/watch?v=goaOnH-sA6s&list=PLIBhfAq00kf0&index=4",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】走れ、今日の僕",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:15:07.924Z",
+      "updatedAt": "2026-08-15T16:15:07.924Z",
+      "order": 54
     }
   ]
 }
