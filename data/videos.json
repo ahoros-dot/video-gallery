@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T15:58:02.461Z",
+  "exportedAt": "2026-08-15T15:59:16.090Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -537,6 +537,24 @@
       "createdAt": "2026-08-15T15:57:59.948Z",
       "updatedAt": "2026-08-15T15:57:59.948Z",
       "order": 29
+    },
+    {
+      "id": "vmsuk9vat64tdi",
+      "url": "https://www.youtube.com/watch?v=latnxrnlVVs&list=PLIBhfAq00kf0&index=4",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI動画】Never Stop Running",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T15:59:13.589Z",
+      "updatedAt": "2026-08-15T15:59:13.589Z",
+      "order": 30
     }
   ]
 }
