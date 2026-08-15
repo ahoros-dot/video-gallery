@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-15T16:08:44.509Z",
+  "exportedAt": "2026-08-15T16:10:13.518Z",
   "items": [
     {
       "id": "vmsrirx5l951wt",
@@ -825,6 +825,24 @@
       "createdAt": "2026-08-15T16:08:41.592Z",
       "updatedAt": "2026-08-15T16:08:41.592Z",
       "order": 45
+    },
+    {
+      "id": "vmsuknxyk7y3p0",
+      "url": "https://www.youtube.com/watch?v=XzbM0nzdLxA&list=PLIBhfAq00kf0&index=12",
+      "videoSrc": "",
+      "platform": "youtube",
+      "title": "【AI作成】地図のない旅（Part3）",
+      "description": "",
+      "tags": [
+        "Youtube"
+      ],
+      "thumbnail": "",
+      "favorite": false,
+      "rating": 0,
+      "publishedAt": "2026-08-16",
+      "createdAt": "2026-08-15T16:10:10.220Z",
+      "updatedAt": "2026-08-15T16:10:10.220Z",
+      "order": 46
     }
   ]
 }
