@@ -338,6 +338,10 @@ gh repo create video-gallery --public --source=. --push
 
 - **`sw.js` の `CACHE_NAME` は、静的ファイルを編集したら必ず上げること。**
   上げないと Service Worker が古いファイルを配信し続け、変更が反映されていないように見える。
+- **`sw.js` の先読み（install）は `cache: 'reload'` で HTTP キャッシュを通さない**（2026-10-08）。画面のファイルはキャッシュ優先なので、
+  先読みした中身が次に `CACHE_NAME` を上げるまで使われる。GitHub Pages は `max-age=600` を付けて返すので、ただの `addAll` だと
+  公開から10分以内に取った古い `app.js` を先読みして、新しい `index.html` と混ざりうる（こえスタジオの公開版で起きた）。
+  localhost（`http-server -c-1`）はキャッシュを付けないので、手元では起きない。
 - `[hidden]` を効かせるために `style.css` の冒頭で `[hidden] { display: none !important }` を
   指定している。`.toast` や `.gallery` などに `display` を直接指定しているため、これがないと
   `hidden` 属性が無視される。
