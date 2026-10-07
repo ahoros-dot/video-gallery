@@ -4,7 +4,7 @@
    その先読みはブラウザの HTTP キャッシュを通さずサーバーから取り直す（cache: 'reload'）。GitHub Pages は max-age=600 を
    付けて返すので、ただ addAll すると公開から10分以内に取った古い app.js を先読みして、新しい index.html と混ざりうる
    （2026-10-08 にこえスタジオで見つかった）。 */
-const CACHE_NAME = 'video-gallery-v8';
+const CACHE_NAME = 'video-gallery-v9';
 
 const ASSETS = [
   './',
@@ -24,9 +24,14 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
+  // 消すのは自分の古いキャッシュだけ。Cache Storage はオリジンごとなので、同じ ahoros-dot.github.io にある
+  // training-log やこえスタジオのキャッシュも同じ置き場に並んでいる（2026-10-08、互いにほかのアプリのキャッシュまで
+  // 消していて、別のアプリを開いたあとはオフラインで開けなくなっていた）
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(
+        keys.filter((k) => k.startsWith('video-gallery-') && k !== CACHE_NAME).map((k) => caches.delete(k)),
+      ))
       .then(() => self.clients.claim()),
   );
 });

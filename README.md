@@ -342,6 +342,10 @@ gh repo create video-gallery --public --source=. --push
   先読みした中身が次に `CACHE_NAME` を上げるまで使われる。GitHub Pages は `max-age=600` を付けて返すので、ただの `addAll` だと
   公開から10分以内に取った古い `app.js` を先読みして、新しい `index.html` と混ざりうる（こえスタジオの公開版で起きた）。
   localhost（`http-server -c-1`）はキャッシュを付けないので、手元では起きない。
+- **`sw.js` の activate で消すのは、`video-gallery-` で始まる古いキャッシュだけ**（2026-10-08）。Cache Storage はオリジンごとで、
+  同じ `ahoros-dot.github.io` の training-log・こえスタジオと置き場を共有している。前は「自分の `CACHE_NAME` 以外を全部」消していたので、
+  ほかのアプリを開くとこのアプリのキャッシュが消えた。画面はキャッシュ優先で、キャッシュにないファイルを足し直さないので、
+  消されると次に `CACHE_NAME` を上げるまでオフラインで開けなかった。
 - `[hidden]` を効かせるために `style.css` の冒頭で `[hidden] { display: none !important }` を
   指定している。`.toast` や `.gallery` などに `display` を直接指定しているため、これがないと
   `hidden` 属性が無視される。
